@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<config>
+    <connections>
+        <connection>S1:S2</connection>
+        <connection>A:S1</connection>
+        <connection>B:S1</connection>
+        <connection>C:S2</connection>
+        <connection>D:S2</connection>
+    </connections>
+    <devices>
+        <device id="S1" ip="1.13.11.0" port="4"/>
+        <device id="S2" ip="1.12.11.1" port="12"/>
+        <device id="A" ip="1.12.11.2" port="7"/>
+        <device id="B" ip="1.15.11.3" port="3"/>
+        <device id="C" ip="2.12.11.4" port="4"/>
+        <device id="D" ip="1.12.11.5" port="20"/>
+    </devices>
+</config>
