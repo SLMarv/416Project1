@@ -14,10 +14,7 @@ class ConfigParserTest {
 
     @Test void testParserParseConnectionsFrom() {
         ConfigParser parser = new ConfigParser(testPath);
-        List<Address> addresses = List.of(
-                parser.parseDeviceAddress("S2"),
-                parser.parseDeviceAddress("A"),
-                parser.parseDeviceAddress("B"));
+        List<String> addresses = List.of("S2", "A", "B");
         Assertions.assertEquals(addresses, parser.parseConnectionsFrom("S1"));
     }
 }

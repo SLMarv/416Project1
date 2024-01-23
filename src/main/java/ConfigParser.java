@@ -29,15 +29,15 @@ public class ConfigParser{
         }
     }
 
-    public List<Address> parseConnectionsFrom(String deviceID){
-        List<Address> deviceAddressList = new ArrayList<>();
+    public List<String> parseConnectionsFrom(String deviceID){
+        List<String> deviceIDList = new ArrayList<>();
         for (int index = 0; index < connections.getLength(); index++) {
             String content = connections.item(index).getTextContent();
             if (content.contains(deviceID)){
-                deviceAddressList.add(parseDeviceAddress(content.replace(deviceID, "").replace(":","")));
+                deviceIDList.add(content.replace(deviceID, "").replace(":",""));
             }
         }
-        return deviceAddressList;
+        return deviceIDList;
     }
 
     public Address parseDeviceAddress(String deviceID){

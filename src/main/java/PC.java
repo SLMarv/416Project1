@@ -1,2 +1,2 @@
-public class PC {
+public class PC extends Device{
 }
