@@ -29,7 +29,15 @@ public class ConfigParser{
         }
     }
 
-    public List<String> parseConnectionsFrom(String deviceID){
+    public List<Address> parseVirtualPorts(String deviceID){
+        List<Address> ports = new ArrayList<>();
+        for(String id: parseVirtualPortIDs(deviceID)){
+            ports.add(parseDeviceAddress(id));
+        }
+        return ports;
+    }
+
+    public List<String> parseVirtualPortIDs(String deviceID){
         List<String> deviceIDList = new ArrayList<>();
         for (int index = 0; index < connections.getLength(); index++) {
             String content = connections.item(index).getTextContent();

@@ -15,6 +15,6 @@ class ConfigParserTest {
     @Test void testParserParseConnectionsFrom() {
         ConfigParser parser = new ConfigParser(testPath);
         List<String> addresses = List.of("S2", "A", "B");
-        Assertions.assertEquals(addresses, parser.parseConnectionsFrom("S1"));
+        Assertions.assertEquals(addresses, parser.parseVirtualPortIDs("S1"));
     }
 }
