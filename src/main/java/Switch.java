@@ -20,18 +20,23 @@ public class Switch extends Device{
         //noinspection InfiniteLoopStatement
         while (true){
             Message incomingMessage = receiveMessage();
-            String messageContent = incomingMessage.getMessageContent();
             if (!deviceIDToPortMap.containsKey(incomingMessage.getOriginalSenderID())){
                 deviceIDToPortMap.put(incomingMessage.getOriginalSenderID(), incomingMessage.getVirtualPort());
             }
             if (deviceIDToPortMap.containsKey(incomingMessage.getDestinationID())){
                 Address outgoingPort = deviceIDToPortMap.get(incomingMessage.getDestinationID());
-                sendMessage(messageContent, outgoingPort);
+                sendMessage(incomingMessage.getMessageContent(), outgoingPort);
             } else {
-                List<Address> outgoingPorts = new ArrayList<>(deviceIDToPortMap.values());
-                outgoingPorts.remove(incomingMessage.getVirtualPort());
-                for(Address outgoingPort:outgoingPorts) sendMessage(messageContent, outgoingPort);
+                flood(incomingMessage);
             }
+        }
+    }
+
+    private void flood(Message incomingMessage) {
+        List<Address> outgoingPorts = new ArrayList<>(virtualPortList);
+        outgoingPorts.remove(incomingMessage.getVirtualPort());
+        for(Address outgoingPort:outgoingPorts) {
+            sendMessage(incomingMessage.getMessageContent(), outgoingPort);
         }
     }
 }
