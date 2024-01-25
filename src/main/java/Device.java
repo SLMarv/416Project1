@@ -2,10 +2,12 @@ import java.util.List;
 
 public abstract class Device {
     private final Address deviceAddress;
+    private final String deviceID;
     protected final List<Address> virtualPortList;
 
     protected Device(String deviceID, String configPath) {
         ConfigParser configParser = new ConfigParser(configPath);
+        this.deviceID = deviceID;
         this.deviceAddress = configParser.parseDeviceAddress(deviceID);
         this.virtualPortList = configParser.parseVirtualPorts(deviceID);
         //TODO set up socket here
@@ -13,12 +15,16 @@ public abstract class Device {
 
 
     //TODO
-    public void sendMessage(String messageContent, Address outgoingPort){
+    public void sendMessage(Message message, Address outgoingPort){
 
     }
 
     public Message receiveMessage(){
         return null;
+    }
+
+    public String getDeviceID() {
+        return deviceID;
     }
 
     protected static class Message{
