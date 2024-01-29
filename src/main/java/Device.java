@@ -1,9 +1,23 @@
+
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 public abstract class Device {
     private final Address deviceAddress;
     private final String deviceID;
     protected final List<Address> virtualPortList;
+
+    protected static ReentrantLock lock = new ReentrantLock();
+
+    protected static boolean isDeviceSending = false;
+    protected static Condition isNotSending = lock.newCondition();
+    protected static Condition isDoneReceiving = lock.newCondition();
+
+    protected static int devicesSendingNum = 0;
+    protected static int devicesReceivingNum = 0;
 
     protected Device(String deviceID, String configPath) {
         ConfigParser configParser = new ConfigParser(configPath);
@@ -16,12 +30,50 @@ public abstract class Device {
 
     //TODO
     public void sendMessage(Message message, Address outgoingPort){
-
+        /* ExecutorService es = Executors.newFixedThreadPool(4);
+        Runnable uploader = new CaseS();
+        es.submit(uploader); */
+        // TODO: finish CaseS and set up sockets for UDP
     }
 
-    public Message receiveMessage(){
-        return null;
+    public static class CaseS implements Runnable {
+
+        // TODO: add logic to send UDP packet
+
+        public CaseS(){
+
+        }
+        public void run() {
+
+            lock.lock();
+
+            try {
+
+                while(isDeviceSending && devicesReceivingNum == 0) {
+                    isDoneReceiving.await();
+                }
+                isDeviceSending = true;
+                devicesSendingNum++;
+
+
+                devicesSendingNum--;
+                if(devicesSendingNum == 0){
+                    isNotSending.signal();
+                }
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            } finally {
+                isDeviceSending = false;
+                lock.unlock();
+            }
+
+        }
     }
+
+    public Message receiveMessage(){return null;}
 
     public String getDeviceID() {
         return deviceID;
