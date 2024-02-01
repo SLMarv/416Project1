@@ -4,6 +4,7 @@ public abstract class Device {
     private final Address deviceAddress;
     private final String deviceID;
     protected final List<Address> virtualPortList;
+    protected boolean running = true;
 
     protected Device(String deviceID, String configPath) {
         ConfigParser configParser = new ConfigParser(configPath);
@@ -13,6 +14,7 @@ public abstract class Device {
         //TODO set up socket here
     }
 
+    abstract void start();
 
     //TODO
     public void sendMessage(Message message, Address outgoingPort){
