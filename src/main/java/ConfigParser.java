@@ -33,6 +33,7 @@ public class ConfigParser{
         List<Address> ports = new ArrayList<>();
         for(String id: parseVirtualPortIDs(deviceID)){
             ports.add(parseDeviceAddress(id));
+            System.out.println(parseDeviceAddress(id).getIP() + parseDeviceAddress(id).getPort());
         }
         return ports;
     }

@@ -14,6 +14,7 @@ public abstract class Device {
     protected Device(String deviceID, String configPath) throws SocketException {
         ConfigParser configParser = new ConfigParser(configPath);
         this.deviceID = deviceID;
+        System.out.println("Running Device " + deviceID);
         Address deviceAddress = configParser.parseDeviceAddress(deviceID);
         virtualPortList = configParser.parseVirtualPorts(deviceID);
         socket = new DatagramSocket(deviceAddress.getPort());
@@ -27,6 +28,7 @@ public abstract class Device {
                 + REGEX+ message.getMessageContent() +REGEX;
         try {
             InetAddress serverIP = InetAddress.getByName(outgoingPort.getIP());
+            System.out.println(outgoingPort.getIP() + " " + outgoingPort.getPort());
             byte[] buffer =messageContent.getBytes();
             DatagramPacket request = new DatagramPacket(buffer, buffer.length, serverIP, outgoingPort.getPort());
             socket.send(request);
