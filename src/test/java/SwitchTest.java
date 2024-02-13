@@ -1,6 +1,8 @@
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.net.SocketException;
 import java.util.*;
 
 class SwitchTest {
@@ -14,7 +16,7 @@ class SwitchTest {
     );
 
     @Test
-    public void testTableGeneration(){
+    public void testTableGeneration() throws IOException {
         Map<String, Address> expectedMap = new HashMap<>(); //Needs to be the same type of map as switch class
         Switch testSwitch = new TSwitch("S1", new LinkedList<>(testMessages));
         testSwitch.start();
@@ -27,7 +29,7 @@ class SwitchTest {
     }
 
     @Test
-    public void testMessageOutput(){
+    public void testMessageOutput() throws IOException {
         TSwitch testSwitch = new TSwitch("S1", new LinkedList<>(testMessages));
         testSwitch.start();
         /*
@@ -44,7 +46,7 @@ class SwitchTest {
         private final List<Map.Entry<Message,Address>> outputMessages = new ArrayList<>();
         private final ConfigParser parser = new ConfigParser("src\\test\\resources\\testConfig.xml");
 
-        private TSwitch(String deviceID, Queue<Message> testMessages) {
+        private TSwitch(String deviceID, Queue<Message> testMessages) throws SocketException {
             super(deviceID, testPath);
             this.testMessages = testMessages;
         }

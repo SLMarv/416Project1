@@ -1,3 +1,5 @@
+import java.io.IOException;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,17 +9,17 @@ public class Switch extends Device{
     private final Map<String, Address> deviceIDToPortMap = new HashMap<>();
     private boolean running = true;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Switch sw = new Switch(args[0],args[1]);
         sw.start();
     }
 
-    public Switch(String deviceID, String configPath){
+    public Switch(String deviceID, String configPath) throws SocketException {
         super(deviceID, configPath);
 
     }
 
-    public void start(){
+    public void start() throws IOException {
         //noinspection InfiniteLoopStatement
         while (running){
             Message incomingMessage = receiveMessage();
