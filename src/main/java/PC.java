@@ -5,6 +5,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class PC extends Device{
+    public static void main(String[] args) throws IOException {
+        PC pc = new PC(args[0],args[1]);
+        pc.start();
+    }
+
     protected PC(String deviceID, String configPath) throws SocketException {
         super(deviceID, configPath);
     }
