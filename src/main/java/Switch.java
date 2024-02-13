@@ -26,6 +26,7 @@ public class Switch extends Device{
             if (!deviceIDToPortMap.containsKey(incomingMessage.getOriginalSenderID())){
                 deviceIDToPortMap.put(incomingMessage.getOriginalSenderID(), incomingMessage.getVirtualPort());
             }
+            System.out.println(deviceIDToPortMap);
             if (deviceIDToPortMap.containsKey(incomingMessage.getDestinationID())){
                 Address outgoingPort = deviceIDToPortMap.get(incomingMessage.getDestinationID());
                 sendMessage(incomingMessage, outgoingPort);

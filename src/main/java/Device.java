@@ -4,6 +4,8 @@ import java.util.List;
 
 public abstract class Device {
 
+    static private final String REGEX = "%%";
+
     private final String deviceID;
     protected static List<Address> virtualPortList = null;
     private final DatagramSocket socket;
@@ -15,14 +17,14 @@ public abstract class Device {
         Address deviceAddress = configParser.parseDeviceAddress(deviceID);
         virtualPortList = configParser.parseVirtualPorts(deviceID);
         socket = new DatagramSocket(deviceAddress.getPort());
-        //TODO set up socket here
     }
 
     abstract void start() throws IOException;
 
     //TODO
     public void sendMessage(Message message, Address outgoingPort){
-        String messageContent = message.getMessageContent();
+        String messageContent = message.getDestinationID() + REGEX + message.getOriginalSenderID()
+                + REGEX+ message.getMessageContent() +REGEX;
         try {
             InetAddress serverIP = InetAddress.getByName(outgoingPort.getIP());
             byte[] buffer =messageContent.getBytes();
@@ -39,11 +41,11 @@ public abstract class Device {
         socket.receive(request);
         byte[] buffer = request.getData();
         Address address = new Address(request.getAddress().getHostAddress(), request.getPort());
-        String[] data = new String(buffer).split("%%");
+        String[] data = new String(buffer).split(REGEX);
         String destinationID = data[0];
         String originID = data[1];
-        StringBuilder message = new StringBuilder();
-        for (int index = 2; index < data.length; index++){
+        StringBuilder message = new StringBuilder("\n");
+        for (int index = 2; index < data.length-1; index++){
             message.append(data[index]);
         }
         return new Message(address, originID, destinationID, message.toString());
