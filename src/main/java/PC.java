@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.net.SocketException;
+import java.util.Objects;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -22,7 +23,9 @@ public class PC extends Device{
         while(running) {
             Message message = receiveMessage();
             //print message sender and content
-            System.out.println("Received message from " +message.getOriginalSenderID()+ ":" +message.getMessageContent() );
+            if (Objects.equals(message.getDestinationID(), getDeviceID())) {
+                System.out.println("Received message from " + message.getOriginalSenderID() + ":" + message.getMessageContent());
+            }
         }
     }
 

@@ -26,7 +26,6 @@ public class Switch extends Device{
             if (!deviceIDToPortMap.containsKey(incomingMessage.getOriginalSenderID())){
                 deviceIDToPortMap.put(incomingMessage.getOriginalSenderID(), incomingMessage.getVirtualPort());
             }
-            System.out.println(deviceIDToPortMap);
             if (deviceIDToPortMap.containsKey(incomingMessage.getDestinationID())){
                 Address outgoingPort = deviceIDToPortMap.get(incomingMessage.getDestinationID());
                 sendMessage(incomingMessage, outgoingPort);
@@ -39,7 +38,12 @@ public class Switch extends Device{
     private void flood(Message incomingMessage) {
         List<Address> outgoingPorts = new ArrayList<>(virtualPortList);
         outgoingPorts.remove(incomingMessage.getVirtualPort());
-        for(Address outgoingPort:outgoingPorts) sendMessage(incomingMessage, outgoingPort);
+        StringBuilder print = new StringBuilder("flooding to\n");
+        for(Address outgoingPort:outgoingPorts) {
+            sendMessage(incomingMessage, outgoingPort);
+            print.append(outgoingPort.getIP()).append(" : ").append(outgoingPort.getPort()).append("\n");
+        }
+        System.out.println(print);
     }
 
     public Map<String, Address> getTable() {
