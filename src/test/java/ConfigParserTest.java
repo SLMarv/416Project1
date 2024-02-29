@@ -9,7 +9,7 @@ class ConfigParserTest {
     @Test
     public void testParseDeviceAddress(){
         ConfigParser parser = new ConfigParser(testPath);
-        Assertions.assertEquals(parser.parseDeviceAddress("A"), new Address("1.12.11.2", 7));
+        Assertions.assertEquals(parser.parseDeviceAddress("A"), new Connection("1.12.11.2", 7));
     }
 
     @Test void testParserParseConnectionsFrom() {

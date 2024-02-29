@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Switch extends Device{
-    private final Map<String, Address> deviceIDToPortMap = new HashMap<>();
+    private final Map<String, Connection> deviceIDToPortMap = new HashMap<>();
     private boolean running = true;
 
     public static void main(String[] args) throws IOException {
@@ -27,7 +27,7 @@ public class Switch extends Device{
                 deviceIDToPortMap.put(incomingMessage.getOriginalSenderID(), incomingMessage.getVirtualPort());
             }
             if (deviceIDToPortMap.containsKey(incomingMessage.getDestinationID())){
-                Address outgoingPort = deviceIDToPortMap.get(incomingMessage.getDestinationID());
+                Connection outgoingPort = deviceIDToPortMap.get(incomingMessage.getDestinationID());
                 sendMessage(incomingMessage, outgoingPort);
             } else {
                 flood(incomingMessage);
@@ -36,17 +36,17 @@ public class Switch extends Device{
     }
 
     private void flood(Message incomingMessage) {
-        List<Address> outgoingPorts = new ArrayList<>(virtualPortList);
+        List<Connection> outgoingPorts = new ArrayList<>(virtualPortList);
         outgoingPorts.remove(incomingMessage.getVirtualPort());
         StringBuilder print = new StringBuilder("flooding to\n");
-        for(Address outgoingPort:outgoingPorts) {
+        for(Connection outgoingPort:outgoingPorts) {
             sendMessage(incomingMessage, outgoingPort);
             print.append(outgoingPort.getIP()).append(" : ").append(outgoingPort.getPort()).append("\n");
         }
         System.out.println(print);
     }
 
-    public Map<String, Address> getTable() {
+    public Map<String, Connection> getTable() {
         return deviceIDToPortMap;
     }
 

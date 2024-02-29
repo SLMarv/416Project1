@@ -22,18 +22,22 @@ public class ConfigParser{
             Document doc = dBuilder.parse(inputFile);
             doc.getDocumentElement().normalize();
             Element config = (Element) doc.getElementsByTagName("config").item(0);
-            connections = ((Element) config.getElementsByTagName("connections").item(0)).getElementsByTagName("connection");
-            devices = ((Element) config.getElementsByTagName("devices").item(0)).getElementsByTagName("device");
+            connections = buildNodeList(config, "connections");
+            devices = buildNodeList(config, "devices");
         } catch (ParserConfigurationException | SAXException | IOException e) {
             throw new  RuntimeException(e.getMessage());
         }
     }
 
-    public List<Address> parseVirtualPorts(String deviceID){
-        List<Address> ports = new ArrayList<>();
+    private NodeList buildNodeList(Element config, String category){
+        NodeList categoryList = config.getElementsByTagName(category);
+        return ((Element) categoryList.item(0)).getElementsByTagName(category.substring(0, category.length()-1));
+    }
+
+    public List<Connection> parseVirtualPorts(String deviceID){
+        List<Connection> ports = new ArrayList<>();
         for(String id: parseVirtualPortIDs(deviceID)){
             ports.add(parseDeviceAddress(id));
-            System.out.println(parseDeviceAddress(id).getIP() + parseDeviceAddress(id).getPort());
         }
         return ports;
     }
@@ -49,17 +53,24 @@ public class ConfigParser{
         return deviceIDList;
     }
 
-    public Address parseDeviceAddress(String deviceID){
-        Address address = null;
+    public Connection parseDeviceAddress(String deviceID){
+        if (deviceID.equals(Device.PRINT_CONNECTION.getIP())){
+            return Device.PRINT_CONNECTION;
+        }
+        Connection connection = null;
         for (int index = 0; index < devices.getLength(); index++) {
             Element device = ((Element)devices.item(index));
             if (device.getAttribute("id").equals(deviceID)){
-                address = new Address(device.getAttribute("ip"), Integer.parseInt(device.getAttribute("port")));
+                connection = new Connection(
+                        deviceID,
+                        device.getAttribute("ip"),
+                        Integer.parseInt(device.getAttribute("port")),
+                        );
             }
         }
-        if (address == null){
+        if (connection == null){
             throw new RuntimeException("Address of " + deviceID+ " not found.\n");
         }
-        return address;
+        return connection;
     }
 }

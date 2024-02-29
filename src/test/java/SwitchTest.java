@@ -17,7 +17,7 @@ class SwitchTest {
 
     @Test
     public void testTableGeneration() throws IOException {
-        Map<String, Address> expectedMap = new HashMap<>(); //Needs to be the same type of map as switch class
+        Map<String, Connection> expectedMap = new HashMap<>(); //Needs to be the same type of map as switch class
         Switch testSwitch = new TSwitch("S1", new LinkedList<>(testMessages));
         testSwitch.start();
         for (int index = 0; index < testMessages.size()-1; index++){
@@ -43,7 +43,7 @@ class SwitchTest {
 
     private static class TSwitch extends Switch {
         private final Queue<Message> testMessages;
-        private final List<Map.Entry<Message,Address>> outputMessages = new ArrayList<>();
+        private final List<Map.Entry<Message, Connection>> outputMessages = new ArrayList<>();
         private final ConfigParser parser = new ConfigParser("src\\test\\resources\\testConfig.xml");
 
         private TSwitch(String deviceID, Queue<Message> testMessages) throws SocketException {
@@ -52,7 +52,7 @@ class SwitchTest {
         }
 
         @Override
-        public void sendMessage(Message message, Address outgoingPort){
+        public void sendMessage(Message message, Connection outgoingPort){
             outputMessages.add(new AbstractMap.SimpleEntry<>(
                     new Message(parser.parseDeviceAddress(getDeviceID()),
                         message.getOriginalSenderID(),

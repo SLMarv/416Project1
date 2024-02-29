@@ -53,8 +53,8 @@ public class PC extends Device{
                 String content = scanner.nextLine();
 
 
-                Message message = new Message(virtualPortList.get(0), device.getDeviceID(), destination, content);
-                device.sendMessage(message, virtualPortList.get(0));
+                Message message = new Message(device.virtualPortList.get(0), device.getDeviceID(), destination, content);
+                device.sendMessage(message, device.virtualPortList.get(0));
 
                 //make a scanner reading terminal input and prompt user for destination and message content info
                 //if input == exitCode then make device.running = false then break

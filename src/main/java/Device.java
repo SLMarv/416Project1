@@ -5,25 +5,27 @@ import java.util.List;
 public abstract class Device {
 
     static private final String REGEX = "%%";
+    static public final Connection PRINT_CONNECTION = new Connection("0",0);
 
     private final String deviceID;
-    protected static List<Address> virtualPortList = null;
+    protected  List<Connection> virtualPortList;
     private final DatagramSocket socket;
     protected boolean running = true;
+    protected final ConfigParser configParser;
 
     protected Device(String deviceID, String configPath) throws SocketException {
-        ConfigParser configParser = new ConfigParser(configPath);
+        configParser = new ConfigParser(configPath);
         this.deviceID = deviceID;
         System.out.println("Running Device " + deviceID);
-        Address deviceAddress = configParser.parseDeviceAddress(deviceID);
+        Connection deviceConnection = configParser.parseDeviceAddress(deviceID);
         virtualPortList = configParser.parseVirtualPorts(deviceID);
-        socket = new DatagramSocket(deviceAddress.getPort());
+        socket = new DatagramSocket(deviceConnection.getPort());
     }
 
     abstract void start() throws IOException;
 
     //TODO
-    public void sendMessage(Message message, Address outgoingPort){
+    public void sendMessage(Message message, Connection outgoingPort){
         String messageContent = message.getDestinationID() + REGEX + message.getOriginalSenderID()
                 + REGEX+ message.getMessageContent() +REGEX;
         try {
@@ -42,7 +44,7 @@ public abstract class Device {
         DatagramPacket request = new DatagramPacket(new byte[messageSize], messageSize);
         socket.receive(request);
         byte[] buffer = request.getData();
-        Address address = new Address(request.getAddress().getHostAddress(), request.getPort());
+        Connection connection = new Connection(request.getAddress().getHostAddress(), request.getPort());
         String[] data = new String(buffer).split(REGEX);
         String destinationID = data[0];
         String originID = data[1];
@@ -50,7 +52,7 @@ public abstract class Device {
         for (int index = 2; index < data.length-1; index++){
             message.append(data[index]);
         }
-        return new Message(address, originID, destinationID, message.toString());
+        return new Message(connection, originID, destinationID, message.toString());
     }
 
     public String getDeviceID() {
@@ -58,20 +60,20 @@ public abstract class Device {
     }
 
     protected static class Message{
-        private final Address address;
+        private final Connection connection;
         private final String originalSenderID;
         private final String destinationID;
         private final String messageContent;
 
 
         /**
-         * @param address The port that the device received the message from. If sending from this device,
+         * @param connection The port that the device received the message from. If sending from this device,
          *                this parameter isn't used
          * @param originalSenderID The ID of the PC that first sent the message
          * @param destinationID The intended final destination of the message.
          */
-        public Message(Address address, String originalSenderID, String destinationID, String messageContent) {
-            this.address = address;
+        public Message(Connection connection, String originalSenderID, String destinationID, String messageContent) {
+            this.connection = connection;
             this.originalSenderID = originalSenderID;
             this.destinationID = destinationID;
             this.messageContent = messageContent;
@@ -81,8 +83,8 @@ public abstract class Device {
             return destinationID;
         }
 
-        public Address getVirtualPort() {
-            return address;
+        public Connection getVirtualPort() {
+            return connection;
         }
 
         public String getOriginalSenderID() {
