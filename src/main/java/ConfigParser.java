@@ -1,5 +1,6 @@
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -35,22 +36,20 @@ public class ConfigParser{
     }
 
     public List<Connection> parseVirtualPorts(String deviceID){
-        List<Connection> ports = new ArrayList<>();
-        for(String id: parseVirtualPortIDs(deviceID)){
-            ports.add(parseDeviceAddress(id));
-        }
-        return ports;
-    }
-
-    public List<String> parseVirtualPortIDs(String deviceID){
-        List<String> deviceIDList = new ArrayList<>();
+        List<Connection> deviceConnectionList = new ArrayList<>();
         for (int index = 0; index < connections.getLength(); index++) {
-            String content = connections.item(index).getTextContent();
-            if (content.contains(deviceID)){
-                deviceIDList.add(content.replace(deviceID, "").replace(":",""));
+            Node node = connections.item(index);
+            String content = node.getTextContent();
+            if (!content.contains(deviceID)){
+                continue;
             }
+            deviceID = content.replace(deviceID, "").replace(":","");
+            Connection baseConnection = parseDeviceAddress(deviceID);
+            String subnet = ((Element) node).getAttribute("subnet");
+            deviceConnectionList.add(new Connection(deviceID, baseConnection.getIP(), baseConnection.getPort(), subnet));
+
         }
-        return deviceIDList;
+        return deviceConnectionList;
     }
 
     public Connection parseDeviceAddress(String deviceID){
@@ -61,11 +60,7 @@ public class ConfigParser{
         for (int index = 0; index < devices.getLength(); index++) {
             Element device = ((Element)devices.item(index));
             if (device.getAttribute("id").equals(deviceID)){
-                connection = new Connection(
-                        deviceID,
-                        device.getAttribute("ip"),
-                        Integer.parseInt(device.getAttribute("port")),
-                        );
+                connection = new Connection(device.getAttribute("ip"), Integer.parseInt(device.getAttribute("port")));
             }
         }
         if (connection == null){
