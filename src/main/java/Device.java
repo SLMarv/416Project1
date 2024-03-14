@@ -5,7 +5,7 @@ import java.util.List;
 public abstract class Device {
 
     static private final String REGEX = "%%";
-    static public final Connection PRINT_CONNECTION = new Connection("0",0);
+    static public final Connection PRINT_CONNECTION = new Connection("OUT","OUT",0, null);
 
     private final String deviceID;
     protected  List<Connection> virtualPortList;
@@ -30,7 +30,6 @@ public abstract class Device {
                 + REGEX+ message.getMessageContent() +REGEX;
         try {
             InetAddress serverIP = InetAddress.getByName(outgoingPort.getIP());
-            System.out.println(outgoingPort.getIP() + " " + outgoingPort.getPort());
             byte[] buffer =messageContent.getBytes();
             DatagramPacket request = new DatagramPacket(buffer, buffer.length, serverIP, outgoingPort.getPort());
             socket.send(request);

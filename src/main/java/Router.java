@@ -16,14 +16,14 @@ public class Router extends Device{
                 super(deviceID, configPath);
                 for(Connection port : virtualPortList){
                         nextHopMap.put(port.getDeviceID(), port);
-                        vectorTable.updateTable(new TableEntry(port.getSubnet(), port.getDeviceID(), 1));
+                        vectorTable.updateTable(new TableEntry(port.getSubnet(), port.getDeviceID(), deviceID, 0));
                 }
         }
 
         @Override
         void start() throws IOException {
                 System.out.print("");
-                broadcastTable();
+                broadcastTable(getDeviceID());
                 while (running){
                       Message message = receiveMessage();
                       String content = message.getMessageContent();
@@ -34,21 +34,25 @@ public class Router extends Device{
                                       tableUpdated = true;
                               }
                       }
-                      if (tableUpdated) broadcastTable();
+                      if (tableUpdated) broadcastTable(message.getOriginalSenderID());
                 }
         }
 
-        private void broadcastTable() {
+        private void broadcastTable(String updateOriginID) {
+                String tableString = convertTableToString(vectorTable);
+                System.out.println("Updated table from " +updateOriginID + "'s table\n" +
+                        "Network / Outgoing port / Next Hop / Cost\n"+
+                        tableString);
                 for(Connection port : virtualPortList){
                         if (!"R".equals(port.getDeviceID().substring(0,1))) continue;
                         Message message = new Message(
                                 null,
                                 getDeviceID(),
                                 port.getDeviceID(),
-                                convertTableToString(vectorTable)
+                                tableString
                         );
                         sendMessage(message, port);
-                        System.out.println(message.getMessageContent());
+
                 }
         }
 

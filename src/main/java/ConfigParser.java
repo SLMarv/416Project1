@@ -43,10 +43,10 @@ public class ConfigParser{
             if (!content.contains(deviceID)){
                 continue;
             }
-            deviceID = content.replace(deviceID, "").replace(":","");
-            Connection baseConnection = parseDeviceAddress(deviceID);
+            String newDeviceID = content.replace(deviceID, "").replace(":","");
+            Connection baseConnection = parseDeviceAddress(newDeviceID);
             String subnet = ((Element) node).getAttribute("subnet");
-            deviceConnectionList.add(new Connection(deviceID, baseConnection.getIP(), baseConnection.getPort(), subnet));
+            deviceConnectionList.add(new Connection(newDeviceID, baseConnection.getIP(), baseConnection.getPort(), subnet));
 
         }
         return deviceConnectionList;
