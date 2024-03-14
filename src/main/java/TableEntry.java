@@ -17,7 +17,7 @@ public class TableEntry {
         try {
             String destination = arguments[0];
             String outGoingPort = sourceOfTableEntry==null? arguments[1] : sourceOfTableEntry;
-            String nextHop = arguments[3];
+            String nextHop = sourceOfTableEntry==null? arguments[2] : sourceOfTableEntry;;
             int cost = sourceOfTableEntry==null? Integer.parseInt(arguments[3]) : Integer.parseInt(arguments[3]) + 1;
             return new TableEntry(destination, outGoingPort, nextHop, cost);
         } catch (Exception e){
