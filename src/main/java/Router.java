@@ -26,6 +26,7 @@ public class Router extends Device{
                 broadcastTable(getDeviceID());
                 while (running){
                       Message message = receiveMessage();
+                      System.out.println(message.getOriginalSenderID());
                       String content = message.getMessageContent();
                       boolean tableUpdated = false;
                       for (String entryString : content.split("\n")){
