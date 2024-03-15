@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class Router extends Device{
         private final VectorTable vectorTable = new VectorTable();
@@ -22,12 +23,11 @@ public class Router extends Device{
 
         @Override
         void start() throws IOException {
-                System.out.print("");
                 broadcastTable(getDeviceID());
                 while (running){
                       Message message = receiveMessage();
-                      System.out.println(message.getOriginalSenderID());
                       String content = message.getMessageContent();
+                      if (content.equals("\n")) System.out.println("recieved empty message from " + message.getOriginalSenderID());
                       boolean tableUpdated = false;
                       for (String entryString : content.split("\n")){
                               if (entryString.equals("")) continue;
@@ -46,6 +46,8 @@ public class Router extends Device{
                         tableString);
                 for(Connection port : virtualPortList){
                         if (!"R".equals(port.getDeviceID().substring(0,1))) continue;
+                        if (Objects.equals(port.getDeviceID(), "R1") && tableString.contains("N7"))
+                                System.out.println("Sending N7 to R1");
                         Message message = new Message(
                                 null,
                                 getDeviceID(),
@@ -53,7 +55,6 @@ public class Router extends Device{
                                 tableString
                         );
                         sendMessage(message, port);
-
                 }
         }
 
