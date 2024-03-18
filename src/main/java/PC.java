@@ -24,7 +24,7 @@ public class PC extends Device{
             Message message = receiveMessage();
             //print message sender and content
             if (Objects.equals(message.getDestinationID(), getDeviceID())) {
-                System.out.println("Received message from " + message.getOriginalSenderID() + ":" + message.getMessageContent());
+                System.out.println("Received message from " + message.getOriginalSenderID() + ":\n" + message.getMessageContent());
             }
         }
     }

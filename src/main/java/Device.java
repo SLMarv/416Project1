@@ -39,7 +39,7 @@ public abstract class Device {
     }
 
     public Message receiveMessage() throws IOException {
-        int messageSize = 100;
+        int messageSize = 1000;
         DatagramPacket request = new DatagramPacket(new byte[messageSize], messageSize);
         socket.receive(request);
         byte[] buffer = request.getData();
@@ -47,7 +47,7 @@ public abstract class Device {
         String[] data = new String(buffer).split(REGEX);
         String destinationID = data[0];
         String originID = data[1];
-        StringBuilder message = new StringBuilder("\n");
+        StringBuilder message = new StringBuilder();
         for (int index = 2; index < data.length-1; index++){
             message.append(data[index]);
         }
