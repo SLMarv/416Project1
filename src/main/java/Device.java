@@ -44,7 +44,10 @@ public abstract class Device {
         socket.receive(request);
         byte[] buffer = request.getData();
         Connection connection = new Connection(request.getAddress().getHostAddress(), request.getPort());
-        String[] data = new String(buffer).split(REGEX);
+        String packetContent = new String(buffer);
+        String[] data = packetContent.split(REGEX);
+        if (data.length == 3) throw new RuntimeException("Received message is missing an ending regex (possible" +
+                "the receiving buffer is not big enough):\n" + packetContent);
         String destinationID = data[0];
         String originID = data[1];
         StringBuilder message = new StringBuilder();
