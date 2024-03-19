@@ -6,6 +6,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class PC extends Device{
+
+    //Todo determine if destination is in a different subnet or not. If so, send to Router's address.
     public static void main(String[] args) throws IOException {
         PC pc = new PC(args[0],args[1]);
         pc.start();

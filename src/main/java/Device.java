@@ -47,7 +47,7 @@ public abstract class Device {
         String packetContent = new String(buffer);
         String[] data = packetContent.split(REGEX);
         if (data.length == 3) throw new RuntimeException("Received message is missing an ending regex (possible" +
-                "the receiving buffer is not big enough):\n" + packetContent);
+                "that the receiving buffer is not big enough):\n" + packetContent);
         String destinationID = data[0];
         String originID = data[1];
         StringBuilder message = new StringBuilder();
