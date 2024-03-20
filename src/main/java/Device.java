@@ -5,6 +5,7 @@ import java.util.List;
 public abstract class Device {
 
     static private final String REGEX = "%%";
+    static protected final String ROUTING_REGEX = "!'";
     static public final Connection PRINT_CONNECTION = new Connection("OUT","OUT",0, null);
 
     private final String deviceID;
@@ -70,7 +71,7 @@ public abstract class Device {
 
         /**
          * @param connection The port that the device received the message from. If sending from this device,
-         *                this parameter isn't used
+         *                this parameter isn't used and can be null
          * @param originalSenderID The ID of the PC that first sent the message
          * @param destinationID The intended final destination of the message.
          */

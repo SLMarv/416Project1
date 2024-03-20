@@ -68,4 +68,17 @@ public class ConfigParser{
         }
         return connection;
     }
+
+    public String parseRouterFor(String networkID){
+        for (int index = 0; index < connections.getLength(); index++) {
+            Node node = connections.item(index);
+            String subnet = ((Element) node).getAttribute("subnet");
+            String content = node.getTextContent();
+            if(!subnet.equals(networkID) || !content.contains("R")) continue;
+            for (String id : content.split(":")){
+                if (id.contains("R")) return id;
+            }
+        }
+        throw new RuntimeException("Router for subnet " + networkID + " not found.");
+    }
 }
