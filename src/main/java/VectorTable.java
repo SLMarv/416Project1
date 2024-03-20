@@ -28,4 +28,13 @@ public class VectorTable extends HashMap<String, TableEntry> {
         }
         return false;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (TableEntry entry : values()){
+            stringBuilder.append(entry.toString()).append("\n");
+        }
+        return stringBuilder.toString();
+    }
 }

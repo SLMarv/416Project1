@@ -65,7 +65,7 @@ public class Router extends Device{
         }
 
         private void broadcastTable(String updateOriginID) {
-                String tableString = convertTableToString(vectorTable);
+                String tableString = vectorTable.toString();
                 System.out.println("Updated table from " +updateOriginID + "'s table\n" +
                         "Network / Outgoing port / Next Hop / Cost\n"+
                         tableString);
@@ -79,13 +79,5 @@ public class Router extends Device{
                         );
                         sendMessage(message, port);
                 }
-        }
-
-        private String convertTableToString(VectorTable vectorTable) {
-                StringBuilder stringBuilder = new StringBuilder();
-                for (TableEntry entry : vectorTable.values()){
-                        stringBuilder.append(entry.toString()).append("\n");
-                }
-                return stringBuilder.toString();
         }
 }
