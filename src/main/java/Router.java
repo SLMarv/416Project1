@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.net.SocketException;
+import java.util.Objects;
 
 public class Router extends Device{
         public static final String ROUTER_ID_PREFIX = "R";
@@ -24,9 +25,11 @@ public class Router extends Device{
                 while (running){
                       Message message = receiveMessage();
                       if (message.getOriginalSenderID().startsWith(ROUTER_ID_PREFIX)) updateTableFrom(message);
-                      else if (isDirectlyConnectedToSubnet(message.getMessageContent().substring(0,2)))
-                              sendMessageToLocalNetwork(message);
-                      else routeMessage(message);
+                      else if (Objects.equals(message.getDestinationID(), getDeviceID())){
+                              if (isDirectlyConnectedToSubnet(message.getMessageContent().substring(0,2)))
+                                      sendMessageToLocalNetwork(message);
+                              else routeMessage(message);
+                      } else System.out.println("Ignoring message from " + message.getOriginalSenderID());
                 }
         }
 
