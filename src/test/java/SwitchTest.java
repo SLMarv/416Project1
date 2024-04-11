@@ -54,7 +54,7 @@ class SwitchTest {
         @Override
         public void sendMessage(Message message, Connection outgoingPort){
             outputMessages.add(new AbstractMap.SimpleEntry<>(
-                    new Message(parser.parseDeviceAddress(getDeviceID()),
+                    new Message(parser.parseDeviceAddress(getMACAddress()),
                         message.getOriginalSenderID(),
                         message.getDestinationID(),
                         message.getMessageContent()),

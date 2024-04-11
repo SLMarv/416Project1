@@ -8,18 +8,18 @@ public abstract class Device {
     static protected final String ROUTING_REGEX = "!'";
     static public final Connection PRINT_CONNECTION = new Connection("OUT","OUT",0, null);
 
-    private final String deviceID;
+    private final String macAddress;
     protected  List<Connection> virtualPortList;
     private final DatagramSocket socket;
     protected boolean running = true;
     protected final ConfigParser configParser;
 
-    protected Device(String deviceID, String configPath) throws SocketException {
+    protected Device(String macAddress, String configPath) throws SocketException {
         configParser = new ConfigParser(configPath);
-        this.deviceID = deviceID;
-        System.out.println("Running Device " + deviceID);
-        Connection deviceConnection = configParser.parseDeviceAddress(deviceID);
-        virtualPortList = configParser.parseVirtualPorts(deviceID);
+        this.macAddress = macAddress;
+        System.out.println("Running Device " + macAddress);
+        Connection deviceConnection = configParser.parseDeviceAddress(macAddress);
+        virtualPortList = configParser.parseVirtualPorts(macAddress);
         socket = new DatagramSocket(deviceConnection.getPort());
     }
 
@@ -58,8 +58,8 @@ public abstract class Device {
         return new Message(connection, originID, destinationID, message.toString());
     }
 
-    public String getDeviceID() {
-        return deviceID;
+    public String getMACAddress() {
+        return macAddress;
     }
 
     protected static class Message{
@@ -96,6 +96,16 @@ public abstract class Device {
 
         public String getMessageContent() {
             return messageContent;
+        }
+
+        @Override
+        public String toString() {
+            return "Message{" +
+                    "connection=" + connection +
+                    ", originalSenderID='" + originalSenderID + '\'' +
+                    ", destinationID='" + destinationID + '\'' +
+                    ", messageContent='" + messageContent + '\'' +
+                    '}';
         }
     }
 }

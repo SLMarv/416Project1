@@ -8,6 +8,7 @@ import java.util.concurrent.Executors;
 public class PC extends Device{
 
     private final String subnetRouterID;
+    private final String ipAddress;
 
     public static void main(String[] args) throws IOException {
         PC pc = new PC(args[0],args[1]);
@@ -16,7 +17,9 @@ public class PC extends Device{
 
     protected PC(String deviceID, String configPath) throws SocketException {
         super(deviceID, configPath);
-        subnetRouterID = configParser.parseRouterFor(deviceID.substring(0,2));
+        String subnet = virtualPortList.get(0).getSubnet();
+        subnetRouterID = configParser.parseRouterFor(subnet);
+        ipAddress = subnet + "." + deviceID;
     }
 
     public void start() throws IOException {
@@ -27,9 +30,9 @@ public class PC extends Device{
         while(running) {
             Message message = receiveMessage();
             //print message sender and content
-            if (Objects.equals(message.getDestinationID(), getDeviceID())) {
+            if (Objects.equals(message.getDestinationID(), getMACAddress())) {
                 if(message.getOriginalSenderID().startsWith(Router.ROUTER_ID_PREFIX)){
-                    String messageContent = message.getMessageContent().split(ROUTING_REGEX)[1];
+                    String messageContent = message.getMessageContent().split(ROUTING_REGEX)[2];
                     String originalSender = message.getMessageContent().split(ROUTING_REGEX)[0];
                     message = new Message(message.getVirtualPort(), originalSender, message.getDestinationID(), messageContent);
                 }
@@ -61,12 +64,12 @@ public class PC extends Device{
                 System.out.println("Enter message content: ");
                 String content = scanner.nextLine();
 
-                if (destination.contains(".") && !destination.startsWith(pc.getDeviceID().substring(0,2))){
-                    content = destination + ROUTING_REGEX + content;
+                if (destination.contains(".") && !destination.startsWith(pc.getMACAddress().substring(0,2))){
+                    content = pc.ipAddress + ROUTING_REGEX + destination + ROUTING_REGEX + content;
                     destination = pc.subnetRouterID;
                 }
 
-                Message message = new Message(pc.virtualPortList.get(0), pc.getDeviceID(), destination, content);
+                Message message = new Message(pc.virtualPortList.get(0), pc.getMACAddress(), destination, content);
                 pc.sendMessage(message, pc.virtualPortList.get(0));
 
                 //make a scanner reading terminal input and prompt user for destination and message content info

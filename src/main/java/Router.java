@@ -21,12 +21,13 @@ public class Router extends Device{
 
         @Override
         void start() throws IOException {
-                broadcastTable(getDeviceID());
+                broadcastTable(getMACAddress());
                 while (running){
                       Message message = receiveMessage();
-                      if (message.getOriginalSenderID().startsWith(ROUTER_ID_PREFIX)) updateTableFrom(message);
-                      else if (Objects.equals(message.getDestinationID(), getDeviceID())){
-                              if (isDirectlyConnectedToSubnet(message.getMessageContent().substring(0,2)))
+                      if (message.getOriginalSenderID().startsWith(ROUTER_ID_PREFIX)
+                              && !message.getMessageContent().contains(ROUTING_REGEX)) updateTableFrom(message);
+                      else if (Objects.equals(message.getDestinationID(), getMACAddress())){
+                              if (isDirectlyConnectedToSubnet(message.getMessageContent().split(ROUTING_REGEX)[1].substring(0,2)))
                                       sendMessageToLocalNetwork(message);
                               else routeMessage(message);
                       } else System.out.println("Ignoring message from " + message.getOriginalSenderID());
@@ -39,19 +40,20 @@ public class Router extends Device{
         }
 
         private void routeMessage(Message message) {
-                String destinationSubnet = message.getMessageContent().substring(0,2);
-                Connection outgoingPort = configParser.parseDeviceAddress(vectorTable.get(destinationSubnet).getOutgoingPort());
-                Message outgoingMessage = new Message(outgoingPort, message.getOriginalSenderID(), "", message.getMessageContent());
+                String destinationSubnet = message.getMessageContent().split(ROUTING_REGEX)[1].substring(0,2);
+                String destinationMAC = vectorTable.get(destinationSubnet).getOutgoingPort();
+                Connection outgoingPort = configParser.parseDeviceAddress(destinationMAC);
+                Message outgoingMessage = new Message(outgoingPort, getMACAddress(), destinationMAC, message.getMessageContent());
+                System.out.println("Routing to: " + destinationMAC);
                 sendMessage(outgoingMessage, outgoingPort);
         }
 
 
         private void sendMessageToLocalNetwork(Message message) {
-                String[] splitMessageContent = message.getMessageContent().split(ROUTING_REGEX);
-                String destinationID = splitMessageContent[0];
-                String messageContent = message.getOriginalSenderID() + ROUTING_REGEX + splitMessageContent[1];
-                Connection outgoingPort = configParser.parseDeviceAddress(vectorTable.get(destinationID.substring(0,2)).getOutgoingPort());
-                Message outgoingMessage = new Message(outgoingPort, getDeviceID(), destinationID, messageContent);
+                String[] destinationIPSplit = message.getMessageContent().split(ROUTING_REGEX)[1].split("\\.");
+                Connection outgoingPort = configParser.parseDeviceAddress(vectorTable.get(destinationIPSplit[0]).getOutgoingPort());
+                Message outgoingMessage = new Message(outgoingPort, getMACAddress(), destinationIPSplit[1], message.getMessageContent());
+                System.out.println("Sending to local System: " + destinationIPSplit[0] + destinationIPSplit[1]);
                 sendMessage(outgoingMessage, outgoingPort);
         }
 
@@ -76,7 +78,7 @@ public class Router extends Device{
                         if (!port.getDeviceID().startsWith(ROUTER_ID_PREFIX)) continue;
                         Message message = new Message(
                                 null,
-                                getDeviceID(),
+                                getMACAddress(),
                                 port.getDeviceID(),
                                 tableString
                         );
