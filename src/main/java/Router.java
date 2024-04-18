@@ -40,7 +40,7 @@ public class Router extends Device{
         }
 
         private void routeMessage(Message message) {
-                String destinationSubnet = message.getMessageContent().split(ROUTING_REGEX)[1].substring(0,2);
+                String destinationSubnet = message.getMessageContent().split(ROUTING_REGEX)[1].split("\\.")[0];
                 String destinationMAC = vectorTable.get(destinationSubnet).getOutgoingPort();
                 Connection outgoingPort = configParser.parseDeviceAddress(destinationMAC);
                 Message outgoingMessage = new Message(outgoingPort, getMACAddress(), destinationMAC, message.getMessageContent());
