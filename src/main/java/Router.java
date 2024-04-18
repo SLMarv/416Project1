@@ -27,7 +27,7 @@ public class Router extends Device{
                       if (message.getOriginalSenderID().startsWith(ROUTER_ID_PREFIX)
                               && !message.getMessageContent().contains(ROUTING_REGEX)) updateTableFrom(message);
                       else if (Objects.equals(message.getDestinationID(), getMACAddress())){
-                              if (isDirectlyConnectedToSubnet(message.getMessageContent().split(ROUTING_REGEX)[1].substring(0,2)))
+                              if (isDirectlyConnectedToSubnet(message.getMessageContent().split(ROUTING_REGEX)[1].split("\\.")[0]))
                                       sendMessageToLocalNetwork(message);
                               else routeMessage(message);
                       } else System.out.println("Ignoring message from " + message.getOriginalSenderID());
